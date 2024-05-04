@@ -1,22 +1,15 @@
 <div id="<%= dom_id event %>">
-  <p>
-    <strong>Title:</strong>
-    <%= event.title %>
-  </p>
-
-  <p>
-    <strong>Price:</strong>
-    <%= event.price %>
-  </p>
-
-  <p>
-    <strong>Starts on:</strong>
-    <%= event.starts_on %>
-  </p>
-
-  <p>
-    <strong>Ends on:</strong>
-    <%= event.ends_on %>
-  </p>
-
+  <div class="card" style="width: 32rem;">
+    <div class="card-body">
+      <h5 class="card-title"><%= event.title%></h5>
+      <h6 class="card-subtitle mb-2 text-body-secondary">
+        <%= "#{l(event.starts_on, format: :short)} - #{l(event.ends_on, format: :short)}" %>
+      </h6>
+      <h6 class="card-subtitle mb-2 text-body-secondary">
+        <%= event.location %>
+      </h6>
+      <p class="card-text"><%= event.description %> </p>
+      <a href="#" class="btn btn-primary">Order</a>
+    </div>
+  </div>
 </div>

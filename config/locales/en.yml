@@ -28,4 +28,7 @@
 #       enabled: "ON"
 
 en:
-  hello: "Hello world"
+  event:
+    created: "Event was successfully created."
+    updated: "Event was successfully updated."
+    deleted: "Event was successfully deleted."

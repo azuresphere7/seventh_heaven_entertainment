@@ -21,3 +21,10 @@ RSpec:
   Enabled: true # enable rubocop-rspec cops
 RSpec/DescribeClass:
   Enabled: false # ignore missing comments on classes
+
+RSpec/MultipleExpectations:
+  Exclude:
+    - spec/system/**/*
+RSpec/ExampleLength:
+  Exclude:
+    - spec/system/**/*

@@ -49,6 +49,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_04_061024) do
   create_table "active_storage_variant_records", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
@@ -57,6 +59,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_04_061024) do
     t.decimal "price"
     t.datetime "starts_on"
     t.datetime "ends_on"
+    t.string "location"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

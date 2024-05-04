@@ -1,6 +1,15 @@
 detectors:
   IrresponsibleModule:
     enabled: false
+  DuplicateMethodCall:
+    max_calls: 2
+  TooManyStatements:
+    enabled: false
+  InstanceVariableAssumption:
+    enabled: false
 exclude_paths:
     - db/
     - vendor/bundle
+
+  # allow_calls:
+  #   - 'event.data'
