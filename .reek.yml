@@ -7,6 +7,9 @@ detectors:
     enabled: false
   InstanceVariableAssumption:
     enabled: false
+  UncommunicativeVariableName:
+    accept:
+      - e
 exclude_paths:
     - db/
     - vendor/bundle

@@ -1,13 +1,19 @@
 class Event < ApplicationRecord
   has_rich_text :description
+  has_many :orders, dependent: :destroy
+  has_one :event_queue, dependent: :destroy
 
   validates :title, presence: true
   validates :price, presence: true
   validates :location, presence: true
   validates :starts_on, presence: true
   validates :ends_on, presence: true
+  validates :event_queue, presence: true
+  validates :amount_of_tickets, presence: true, numericality: {greater_than: 0}
   validate :starts_on_in_future
   validate :ends_on_after_starts_on
+
+  after_initialize { build_event_queue unless event_queue }
 
   private
 
