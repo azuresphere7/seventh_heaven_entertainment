@@ -1,4 +1,5 @@
 require_relative "support/simple_cov_helper"
+require "timecop"
 
 SimpleCov.start :rails do
   maximum_coverage_drop 0.5
@@ -111,4 +112,6 @@ RSpec.configure do |config|
   config.before(:each, :js, type: :system) do
     driven_by :selenium_chrome_headless # selenium when we need javascript
   end
+
+  RSpec::Matchers.define_negated_matcher :not_change, :change
 end

@@ -5,6 +5,8 @@ detectors:
     max_calls: 2
   TooManyStatements:
     enabled: false
+  TooManyConstants:
+    max_constants: 7
   InstanceVariableAssumption:
     enabled: false
   UncommunicativeVariableName:
@@ -13,6 +15,11 @@ detectors:
 exclude_paths:
     - db/
     - vendor/bundle
+
+directories:
+  "app/jobs**":
+    UtilityFunction:
+      enabled: false
 
   # allow_calls:
   #   - 'event.data'

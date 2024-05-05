@@ -11,7 +11,7 @@ RSpec.describe "Creating an event", :js do
     fill_in "Location", with: "123 Main St, City"
     fill_in "Starts on", with: Time.zone.parse("2025-01-01 17:00")
     fill_in "Ends on", with: Time.zone.parse("2025-01-02 01:00")
-    fill_in "Amount of tickets", with: 100
+    fill_in "Capacity", with: 100
     fill_in_rich_text_area "Description", with: "This is my <em>event</em> description"
 
     click_link_or_button "Save"

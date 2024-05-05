@@ -1,5 +1,5 @@
 FactoryBot.define do
-  factory :event_queue do
+  factory :ticket_sale do
     event
   end
 end

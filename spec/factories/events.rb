@@ -6,6 +6,6 @@ FactoryBot.define do
     ends_on { Time.zone.tomorrow + 1.day }
     description { "MyText" }
     location { "MyLocation" }
-    amount_of_tickets { 1 }
+    capacity { 1 }
   end
 end

@@ -52,36 +52,36 @@ RSpec.describe Event do
     end
   end
 
-  describe "#amount_of_tickets" do
+  describe "#capacity" do
     it "is required" do
-      event = build(:event, amount_of_tickets: nil)
+      event = build(:event, capacity: nil)
       event.valid?
-      expect(event.errors.messages[:amount_of_tickets]).to include("can't be blank")
+      expect(event.errors.messages[:capacity]).to include("can't be blank")
     end
 
     it "is greater than 0" do
-      event = build(:event, amount_of_tickets: 0)
+      event = build(:event, capacity: 0)
       event.valid?
-      expect(event.errors.messages[:amount_of_tickets]).to include("must be greater than 0")
+      expect(event.errors.messages[:capacity]).to include("must be greater than 0")
     end
   end
 
-  describe "#event_queue" do
+  describe "#ticket_sale" do
     it "is initialized after initialization" do
       event = described_class.new
-      expect(event.event_queue).to be_present
+      expect(event.ticket_sale).to be_present
     end
 
     it "is required" do
       event = build(:event)
-      event.event_queue = nil
+      event.ticket_sale = nil
       event.valid?
-      expect(event.errors.messages[:event_queue]).to include("can't be blank")
+      expect(event.errors.messages[:ticket_sale]).to include("can't be blank")
     end
 
     it "is saved together with the event" do
       event = create(:event)
-      expect(event.event_queue).to be_persisted
+      expect(event.ticket_sale).to be_persisted
     end
   end
 end

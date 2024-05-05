@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_05_04_093926) do
+ActiveRecord::Schema[7.1].define(version: 2024_05_05_100653) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -54,11 +54,15 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_04_093926) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
-  create_table "event_queues", force: :cascade do |t|
-    t.bigint "event_id", null: false
+  create_table "customer_infos", force: :cascade do |t|
+    t.bigint "order_id", null: false
+    t.string "name"
+    t.string "email"
+    t.string "gender"
+    t.integer "age"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["event_id"], name: "index_event_queues_on_event_id"
+    t.index ["order_id"], name: "index_customer_infos_on_order_id"
   end
 
   create_table "events", force: :cascade do |t|
@@ -69,7 +73,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_04_093926) do
     t.string "location"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "amount_of_tickets"
+    t.integer "capacity"
   end
 
   create_table "orders", force: :cascade do |t|
@@ -80,20 +84,29 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_04_093926) do
     t.index ["event_id"], name: "index_orders_on_event_id"
   end
 
-  create_table "queued_orders", force: :cascade do |t|
-    t.bigint "order_id", null: false
-    t.bigint "event_queue_id", null: false
+  create_table "ticket_reservations", force: :cascade do |t|
+    t.bigint "ticket_sale_id", null: false
+    t.string "reservation_number"
+    t.integer "quantity"
     t.string "status"
+    t.datetime "valid_until"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["event_queue_id"], name: "index_queued_orders_on_event_queue_id"
-    t.index ["order_id"], name: "index_queued_orders_on_order_id"
+    t.index ["reservation_number"], name: "index_ticket_reservations_on_reservation_number", unique: true
+    t.index ["ticket_sale_id"], name: "index_ticket_reservations_on_ticket_sale_id"
+  end
+
+  create_table "ticket_sales", force: :cascade do |t|
+    t.bigint "event_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["event_id"], name: "index_ticket_sales_on_event_id"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
-  add_foreign_key "event_queues", "events"
+  add_foreign_key "customer_infos", "orders"
   add_foreign_key "orders", "events"
-  add_foreign_key "queued_orders", "event_queues"
-  add_foreign_key "queued_orders", "orders"
+  add_foreign_key "ticket_reservations", "ticket_sales"
+  add_foreign_key "ticket_sales", "events"
 end

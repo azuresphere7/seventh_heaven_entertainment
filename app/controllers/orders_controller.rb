@@ -1,6 +1,7 @@
 class OrdersController < ApplicationController
-  def create
-    @order = OrderService.create(order_params)
+  def reserve
+    # TODO:  load spinner
+    TicketSaleService.reserve_tickets(order_params)
 
     respond_to do |format|
       format.html { redirect_to events_path, notice: "Order was successfully created." }
