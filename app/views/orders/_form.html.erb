@@ -1,0 +1,43 @@
+<%= turbo_frame_tag "reservation_form" do %>
+  <div class="alert alert-success" role="alert" id="reservation-info" data-controller="reservation-countdown">
+    Your tickets are reserved for <span id="valid-until"><%= @ticket_reservation.valid_until %></span>.
+    Please complete your order before then.
+  </div>
+
+  <%= form_with(model: [event, order], local: true) do |form| %>
+    <%= form.fields_for :customer_info do |customer_info_form| %>
+      <div class="form-group">
+        <%= customer_info_form.label :name, class: "col-sm-2 control-label" %>
+        <div class="col-sm-10">
+          <%= customer_info_form.text_field :name, class: "form-control", required: true %>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <%= customer_info_form.label :email, class: "col-sm-2 control-label" %>
+        <div class="col-sm-10">
+          <%= customer_info_form.email_field :email, class: "form-control", required: true %>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <%= customer_info_form.label :age, class: "col-sm-2 control-label" %>
+        <div class="col-sm-10">
+          <%= customer_info_form.number_field :age, class: "form-control", min: 1, required: true %>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <%= customer_info_form.label :gender, "Gender", class: "col-sm-2 control-label" %>
+        <div class="col-sm-10">
+          <%= customer_info_form.select :gender,
+            options_for_select([["Male", CustomerInfo::MALE], ["Female", CustomerInfo::FEMALE], ["Other", CustomerInfo::OTHER], ["Prefer not to say", CustomerInfo::PREFER_NOT_TO_SAY]]),
+            {include_blank: "Select Gender"}, {class: "form-control", required: true} %>
+        </div>
+      </div>
+    <% end %>
+    <div class="form-group mt-3"> <!-- Add spacing above the button using mt-3 class -->
+      <%= form.submit "Order", class: "btn btn-primary" %>
+    </div>
+  <% end %>
+<% end %>

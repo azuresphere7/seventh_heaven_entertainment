@@ -1,0 +1,4 @@
+<h1>Order Details</h1>
+<%= render layout: "shared/event_card", locals: {event: @event} do %>
+  <%= render "form", event: @event, ticket_reservation: @ticket_reservation %>
+<% end %>

@@ -46,6 +46,7 @@ gem "image_processing", "~> 1.2"
 
 gem "bootstrap", "~> 5.3.3"
 gem "dartsass-sprockets"
+gem "sidekiq", "~> 7.2"
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
@@ -63,6 +64,7 @@ group :development do
   gem "web-console"
   gem "guard"
   gem "guard-rspec", require: false
+  gem "erb_lint", require: false
 
   # Add speed badges [https://github.com/MiniProfiler/rack-mini-profiler]
   # gem "rack-mini-profiler"

@@ -1,0 +1,17 @@
+<h1>Order Details</h1>
+<%= render layout: "shared/event_card", locals: {event: @event} do %>
+  <div class="row">
+    <div class="col-md-6">
+      <h6 class="card-subtitle mb-2 text-body-secondary">
+        Tickets: <%= @ticket_reservation.quantity%> X 
+        <%= number_to_currency(@ticket_reservation.price, unit: '€') %>
+      </h6>
+    </div>
+    <div class="col-md-6 text-md-end">
+      <h6 class="card-subtitle mb-2 text-body-secondary">
+        Price: <%= number_to_currency(@ticket_reservation.total_price, unit: '€') %>
+      </h6>
+    </div>
+  </div>
+  <%= render "form", event: @event, order: @order %>
+<% end %>

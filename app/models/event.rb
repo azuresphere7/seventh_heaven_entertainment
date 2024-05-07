@@ -4,7 +4,7 @@ class Event < ApplicationRecord
   has_one :ticket_sale, dependent: :destroy
 
   validates :title, presence: true
-  validates :price, presence: true
+  validates :price, presence: true # TODO: greated than 0
   validates :location, presence: true
   validates :starts_on, presence: true
   validates :ends_on, presence: true

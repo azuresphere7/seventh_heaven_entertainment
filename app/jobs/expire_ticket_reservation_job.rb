@@ -3,9 +3,13 @@ class ExpireTicketReservationJob < ApplicationJob
 
   def perform(reservation_number)
     reservation = TicketReservation.find_by!(reservation_number: reservation_number)
+
     TicketSaleService.expire_reservation(
       event_id: reservation.event_id,
       reservation_number: reservation.reservation_number
     )
+  rescue => e
+    # Rails.logger.debug e.message
+    # debugger
   end
 end

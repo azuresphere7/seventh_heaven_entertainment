@@ -1,6 +1,11 @@
 Rails.application.routes.draw do
-  resources :events
-  resources :orders
+  resources :events do
+    resources :ticket_reservations, param: :reservation_number, only: [:new, :create, :show] do
+      # get :expire, on: :member
+    end
+    resources :orders, only: [:new, :create, :show]
+  end
+
   get "pages/about_us"
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 

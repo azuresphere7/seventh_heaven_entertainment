@@ -7,3 +7,13 @@
 #   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
+
+# Create an event
+Event.create!(
+  title: "Ruby on Rails Workshop",
+  price: "20.0",
+  starts_on: 1.day.from_now,
+  ends_on: 1.day.from_now + 2.hours,
+  location: "Online",
+  capacity: 100
+)

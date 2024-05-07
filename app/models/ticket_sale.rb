@@ -27,6 +27,8 @@ class TicketSale < ApplicationRecord
           # :nocov:
         end
       end
+    rescue
+      debugger
     end
 
     def reservation_at_head_of_the_queue?(reservation_number:)
@@ -50,7 +52,7 @@ class TicketSale < ApplicationRecord
 
   belongs_to :event
   has_many :ticket_reservations, dependent: :destroy
-  delegate :capacity, to: :event
+  delegate :capacity, :price, to: :event
 
   def process_queue
     queue.process

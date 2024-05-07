@@ -15,6 +15,11 @@ module TicketSaleService
       ticket_sale = TicketSale.find_by!(event_id: event_id)
       ticket_sale.submit_order(reservation_number: reservation_number, customer_details: customer_details)
     end
+
+    # ActionCable.server.broadcast("ticket_reservation_channel", {
+    #   reservation_number: reservation_number,
+    #   status: "order_submitted"
+    # })
   end
 
   def self.expire_reservation(event_id:, reservation_number:)
@@ -22,6 +27,13 @@ module TicketSaleService
       ticket_sale = TicketSale.find_by!(event_id: event_id)
       ticket_sale.expire_reservation(reservation_number: reservation_number)
     end
+
+    # AfterExpiringReservationJob.perform_later(event_id)
+
+    ActionCable.server.broadcast("ticket_reservation_channel", {
+      reservation_number: reservation_number,
+      status: "reservation_expired"
+    })
 
     ProcessTicketQueueJob.perform_later(event_id)
   end

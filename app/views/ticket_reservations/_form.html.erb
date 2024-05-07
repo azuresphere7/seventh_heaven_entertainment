@@ -1,0 +1,10 @@
+ <%= form_with(model: [event, ticket_reservation], local: true) do |form| %>
+  <div class="form-group row">
+    <%= form.label :quantity, "Number of Tickets (max 6):", class: "col-sm-8 col-form-label" %>
+    <div class="col-sm-4">
+    <%= form.number_field :quantity, class: "form-control", min: 1, max: 6, value: 1 %>
+    </div>
+  </div>
+  <%= form.submit "Order", class: "btn btn-primary" %>
+<% end %>
+
