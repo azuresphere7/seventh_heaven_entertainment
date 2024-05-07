@@ -14,7 +14,7 @@ export default class extends Controller {
 
   connectToChannel(reservationNumber) {
     consumer.subscriptions.create(
-      { channel: "TicketReservationChannel", reservation_number: reservationNumber },
+      { channel: "TicketReservationChannel", reservation_reference: reservationNumber },
       {
         connected() {
           console.log("Connected to TicketReservationChannel");

@@ -80,7 +80,7 @@ RSpec.describe Event do
     end
 
     it "is saved together with the event" do
-      event = create(:event)
+      event = described_class.create(attributes_for(:event))
       expect(event.ticket_sale).to be_persisted
     end
   end

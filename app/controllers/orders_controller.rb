@@ -8,7 +8,7 @@ class OrdersController < ApplicationController
   end
 
   def new
-    @ticket_reservation = TicketReservation.find_by!(reservation_number: reservation_number)
+    @ticket_reservation = TicketReservation.find_by!(reference: reservation_reference)
     @order = Order.new
     # TODO: remove prefilled data
     @order.build_customer_info(name: "test", email: "test@example", age: 18, gender: "female")
@@ -22,14 +22,14 @@ class OrdersController < ApplicationController
       end
     end
   rescue ActiveRecord::RecordNotFound, NoReservationNumberError
-    flash[:error] = "Reservation number not found in session."
+    flash[:error] = I18n.t("errors.reservation.expired")
     redirect_to root_path
   end
 
   def create
     TicketSaleService.order_tickets(
       event_id: @event.id,
-      reservation_number: reservation_number,
+      reference: reservation_reference,
       # reference: SecureRandom.uuid,
       customer_details: order_params[:customer_info_attributes].to_h
     )
@@ -59,9 +59,9 @@ class OrdersController < ApplicationController
     params.require(:order).permit(customer_info_attributes: [:name, :email, :age, :gender])
   end
 
-  def reservation_number
-    reservation_number = session[:reservation_number]
-    return reservation_number unless reservation_number && Rails.cache.exist?(reservation_number)
-    raise NoReservationNumberError unless reservation_number
+  def reservation_reference
+    reservation_reference = session[:reservation_reference]
+    return reservation_reference unless reservation_reference && Rails.cache.exist?(reservation_reference)
+    raise NoReservationNumberError unless reservation_reference
   end
 end

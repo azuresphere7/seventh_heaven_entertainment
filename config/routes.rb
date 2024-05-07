@@ -1,6 +1,6 @@
 Rails.application.routes.draw do
   resources :events do
-    resources :ticket_reservations, param: :reservation_number, only: [:new, :create, :show] do
+    resources :ticket_reservations, param: :reservation_reference, only: [:new, :create, :show] do
       # get :expire, on: :member
     end
     resources :orders, only: [:new, :create, :show]

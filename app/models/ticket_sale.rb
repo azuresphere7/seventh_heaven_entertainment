@@ -1,102 +1,94 @@
 class TicketSale < ApplicationRecord
   class InvalidReservation < StandardError; end
 
-  class Queue
-    attr_reader :sale, :reservations
-    private :sale, :reservations
-
-    def initialize(sale)
-      @sale = sale
-      @reservations = sale.enqueued_reservations
-    end
-
-    def process
-      return if reservations.empty?
-
-      reservations.find_each do |reservation|
-        if can_activate_reservation?(reservation)
-          reservation.activate
-        elsif needs_to_await_active_reservations?(reservation)
-          break
-        elsif no_availability?(reservation)
-          reservation.cancel_because_of_no_availability
-          next if sale.tickets_available?
-        else
-          # :nocov: there is no way to reach this code path
-          raise "Unknown reservation state for #{reservation.reservation_number}"
-          # :nocov:
-        end
-      end
-    rescue
-      debugger
-    end
-
-    def reservation_at_head_of_the_queue?(reservation_number:)
-      reservations.head_of_the_queue.reservation_number == reservation_number
-    end
-
-    private
-
-    def can_activate_reservation?(reservation)
-      reservation.quantity <= sale.number_of_available_tickets
-    end
-
-    def needs_to_await_active_reservations?(reservation)
-      reservation.quantity <= sale.number_of_unsold_tickets
-    end
-
-    def no_availability?(reservation)
-      reservation.quantity > sale.number_of_unsold_tickets
-    end
-  end
-
   belongs_to :event
   has_many :ticket_reservations, dependent: :destroy
-  delegate :capacity, :price, to: :event
+  validates :capacity, presence: true, numericality: {greater_than: 0}
+  delegate :price, to: :event
 
-  def process_queue
-    queue.process
+  def queue_reservation(reference:, quantity:)
+    ticket_reservations.enqueue(
+      quantity: quantity,
+      reference: reference
+    )
   end
 
-  def queue_reservation(reservation_number:, quantity:)
-    ticket_reservations.add(
-      quantity: quantity,
-      reservation_number: reservation_number
-    )
+  def process_queue
+    enqueued_reservations.find_each do |reservation|
+      break if awaiting_active_reservations?(reservation)
+
+      process_enqueued_reservation(reservation)
+    end
+  end
+
+  def process_enqueued_reservation(reservation)
+    with_lock do
+      reservation = find_reservation(reservation.reference)
+      if requested_tickets_available?(reservation)
+        reservation.activate
+        add_to_reserved_tickets(reservation.quantity)
+      elsif requested_tickets_not_available?(reservation)
+        reservation.cancel_because_of_no_availability
+      elsif tickets_available?
+        next
+      else
+        # :nocov: there is no way to reach this reference path
+        raise "Unknown reservation state for #{reservation.reference}"
+        # :nocov:
+      end
+    end
   end
 
   # :reek:FeatureEnvy
-  def expire_reservation(reservation_number:)
-    reservation = find_reservation(reservation_number)
-    reservation.expire if reservation.can_expire?
+  def expire_reservation(reference:)
+    with_lock do
+      reservation = find_reservation(reference)
+
+      if reservation.can_expire?
+        reservation.expire
+        remove_from_reserved_tickets(reservation.quantity)
+      end
+    end
+  rescue ActiveRecord::RecordNotFound
+    # it can silently fail here, as the reservation is already expired
+  end
+
+  def requested_tickets_available?(reservation)
+    reservation.quantity <= number_of_available_tickets
+  end
+
+  def awaiting_active_reservations?(reservation)
+    number_of_available_tickets < reservation.quantity && reservation.quantity <= number_of_unsold_tickets
+  end
+
+  def requested_tickets_not_available?(reservation)
+    reservation.quantity > number_of_unsold_tickets
   end
 
   # TODO: add default payment status
-  # # TODO: locking
-  def submit_order(reservation_number:, customer_details:)
-    reservation = find_reservation(reservation_number)
-    raise InvalidReservation unless reservation.active?
-    Order.submit(
-      event_id: event.id,
-      quantity: reservation.quantity,
-      customer_details: customer_details
-    )
-    reservation.destroy!
+  def submit_order(reference:, customer_details:)
+    with_lock do
+      reservation = find_reservation(reference)
+
+      if reservation.active?
+        Order.submit(
+          event_id: event.id,
+          quantity: reservation.quantity,
+          customer_details: customer_details
+        )
+        reservation.destroy!
+        add_to_sold_and_removed_from_reserved_tickets(reservation.quantity)
+      else
+        raise InvalidReservation
+      end
+    end
   end
 
-  def reservation_at_head_of_the_queue?(reservation_number:)
-    queue.reservation_at_head_of_the_queue?(
-      reservation_number: reservation_number
-    )
+  def reservation_at_head_of_the_queue?(reference:)
+    enqueued_reservations.head_of_the_queue.reference == reference
   end
 
-  def number_of_sold_tickets
-    Order.for_event(event.id).sum(:quantity)
-  end
-
-  def number_of_reserved_tickets
-    ticket_reservations.active.sum(:quantity)
-  end
+  private
 
   def number_of_available_tickets
     capacity - (number_of_reserved_tickets + number_of_sold_tickets)
@@ -106,22 +98,31 @@ class TicketSale < ApplicationRecord
     capacity - number_of_sold_tickets
   end
 
-  def enqueued_reservations
-    ticket_reservations.enqueued.order(created_at: :asc)
-  end
-
   def tickets_available?
     number_of_available_tickets > 0
   end
 
-  private
+  def add_to_reserved_tickets(quantity)
+    update!(number_of_reserved_tickets: number_of_reserved_tickets + quantity)
+  end
 
-  def queue
-    Queue.new(self)
+  def remove_from_reserved_tickets(quantity)
+    update!(number_of_reserved_tickets: number_of_reserved_tickets - quantity)
+  end
+
+  def add_to_sold_and_removed_from_reserved_tickets(quantity)
+    update!(
+      number_of_sold_tickets: number_of_sold_tickets + quantity,
+      number_of_reserved_tickets: number_of_reserved_tickets - quantity
+    )
+  end
+
+  def enqueued_reservations
+    ticket_reservations.enqueued.order(created_at: :asc)
   end
 
   # :reek:UtilityFunction
-  def find_reservation(reservation_number)
-    TicketReservation.find_by!(reservation_number: reservation_number)
+  def find_reservation(reference)
+    TicketReservation.find_by!(reference: reference)
   end
 end

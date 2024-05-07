@@ -4,7 +4,7 @@ class Event < ApplicationRecord
   has_one :ticket_sale, dependent: :destroy
 
   validates :title, presence: true
-  validates :price, presence: true # TODO: greated than 0
+  validates :price, presence: true, numericality: {greater_or_equal_than: 0} # We do free events too!
   validates :location, presence: true
   validates :starts_on, presence: true
   validates :ends_on, presence: true
@@ -13,7 +13,8 @@ class Event < ApplicationRecord
   validate :starts_on_in_future
   validate :ends_on_after_starts_on
 
-  after_initialize { build_ticket_sale unless ticket_sale }
+  # ideally this is handled async, after which a a event is marked as 'published'
+  after_initialize { build_ticket_sale(capacity: capacity) unless ticket_sale }
 
   private
 

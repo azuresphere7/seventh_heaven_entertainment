@@ -1,48 +1,38 @@
 module TicketSaleService
-  def self.reserve_tickets(event_id:, quantity:, reservation_number: SecureRandom.uuid)
+  def self.reserve_tickets(event_id:, quantity:, reference:)
     ticket_sale = TicketSale.find_by!(event_id: event_id)
-    ticket_sale.queue_reservation(quantity:, reservation_number:)
+    ticket_sale.queue_reservation(quantity:, reference:)
 
-    return unless ticket_sale.reservation_at_head_of_the_queue?(
-      reservation_number: reservation_number
-    )
+    return unless ticket_sale.reservation_at_head_of_the_queue?(reference: reference)
 
     ProcessTicketQueueJob.perform_later(event_id)
   end
 
-  def self.order_tickets(event_id:, reservation_number:, customer_details:)
-    TicketSale.transaction do
-      ticket_sale = TicketSale.find_by!(event_id: event_id)
-      ticket_sale.submit_order(reservation_number: reservation_number, customer_details: customer_details)
-    end
-
-    # ActionCable.server.broadcast("ticket_reservation_channel", {
-    #   reservation_number: reservation_number,
-    #   status: "order_submitted"
-    # })
+  def self.order_tickets(event_id:, reference:, customer_details:)
+    TicketSale
+      .find_by!(event_id: event_id)
+      .submit_order(reference: reference, customer_details: customer_details)
   end
 
-  def self.expire_reservation(event_id:, reservation_number:)
-    TicketSale.transaction do
-      ticket_sale = TicketSale.find_by!(event_id: event_id)
-      ticket_sale.expire_reservation(reservation_number: reservation_number)
-    end
+  def self.expire_reservation(event_id:, reference:)
+    TicketSale
+      .find_by!(event_id: event_id)
+      .expire_reservation(reference: reference)
 
     # AfterExpiringReservationJob.perform_later(event_id)
 
-    ActionCable.server.broadcast("ticket_reservation_channel", {
-      reservation_number: reservation_number,
-      status: "reservation_expired"
-    })
+    # ActionCable.server.broadcast("ticket_reservation_channel", {
+    #   reference: reference,
+    #   status: "reservation_expired"
+    # })
 
-    ProcessTicketQueueJob.perform_later(event_id)
+    # ProcessTicketQueueJob.perform_later(event_id)
   end
 
   # we are locking the queue to prevent race conditions from happening
   def self.process_ticket_queue(event_id:)
-    TicketSale.transaction do
-      ticket_sale = TicketSale.find_by!(event_id: event_id).lock!
-      ticket_sale.process_queue
-    end
+    TicketSale
+      .find_by!(event_id: event_id)
+      .process_queue
   end
 end

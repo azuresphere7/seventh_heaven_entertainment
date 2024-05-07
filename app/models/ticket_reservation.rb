@@ -17,10 +17,10 @@ class TicketReservation < ApplicationRecord
 
   delegate :event_id, :price, to: :ticket_sale
 
-  def self.add(quantity:, reservation_number:)
+  def self.enqueue(quantity:, reference:)
     create!(
       quantity: quantity,
-      reservation_number: reservation_number,
+      reference: reference,
       status: :enqueued
     )
   end
@@ -30,17 +30,17 @@ class TicketReservation < ApplicationRecord
   end
 
   def to_param
-    reservation_number
+    reference
   end
 
   def activate
     update!(status: ACTIVE, valid_until: DURATION.from_now)
-    ExpireTicketReservationJob.set(wait_until: valid_until).perform_later(reservation_number)
+    ExpireTicketReservationJob.set(wait_until: valid_until).perform_later(reference)
 
     # near realtime performance is good enough,
     # ideally i would factor out these jobs in active record models
     # by implementing events and handles with rails event store
-    AfterActivatingReservationJob.perform_later(reservation_number)
+    AfterActivatingReservationJob.perform_later(reference)
   end
 
   def cancel_because_of_no_availability

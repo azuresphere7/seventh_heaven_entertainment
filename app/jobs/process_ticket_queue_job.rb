@@ -5,7 +5,7 @@ class ProcessTicketQueueJob < ApplicationJob
     # simulate a delay in the reservation process for demo purposes
     sleep 3 if Rails.env.development?
     TicketSaleService.process_ticket_queue(event_id: event_id)
-  rescue => e
+  rescue
     # Rails.logger.debug e.message
     # debugger
   end

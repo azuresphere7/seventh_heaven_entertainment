@@ -1,21 +1,21 @@
 class AfterActivatingReservationJob < ApplicationJob
   queue_as :default
 
-  def perform(reservation_number)
-    reservation = TicketReservation.find_by!(reservation_number: reservation_number)
+  def perform(reservation_reference)
+    reservation = TicketReservation.find_by!(reference: reservation_reference)
 
     schedule_expiring_reservation(reservation)
     broadcast_reservation_activated(reservation)
-  rescue => e
-    Rails.logger.debug e.message
-    debugger
+  rescue
+    # Rails.logger.debug e.message
+    # debugger
   end
 
   private
 
   def broadcast_reservation_activated(reservation)
     TicketReservationBroadcaster.new(
-      reservation_number: reservation.reservation_number,
+      reservation_reference: reservation.reference,
       event_id: reservation.event_id
     ).broadcast_activated
   end
@@ -23,6 +23,6 @@ class AfterActivatingReservationJob < ApplicationJob
   def schedule_expiring_reservation(reservation)
     ExpireTicketReservationJob
       .set(wait_until: reservation.valid_until)
-      .perform_later(reservation.reservation_number)
+      .perform_later(reservation.reference)
   end
 end

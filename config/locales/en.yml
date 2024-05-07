@@ -32,3 +32,5 @@ en:
     created: "Event was successfully created."
     updated: "Event was successfully updated."
     deleted: "Event was successfully deleted."
+  reservation:
+    expired: "Reservation has expired."

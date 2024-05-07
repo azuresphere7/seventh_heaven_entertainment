@@ -1,6 +1,6 @@
 <%= turbo_frame_tag "reservation_form" do %>
   <div data-controller="ticket-reservation"
-        data-ticket-reservation-reservation-number="<%= ticket_reservation.reservation_number%>">
+        data-ticket-reservation-reservation-number="<%= ticket_reservation.reference%>">
     <% if ticket_reservation.enqueued? %>
       <div class="alert alert-info" role="alert">
         Your order is being processed. Don't close the screen
@@ -10,9 +10,9 @@
         Your order is ready to be completed.
         Please complete your order before <%= ticket_reservation.valid_until %>.
         <%# in case javascript is disabled %>
-        
+        <%= link_to "Complete Order", new_event_order_path(ticket_reservation.event_id), class: "btn btn-primary" %>        
       </div>
     <% end %>
   </div>
 <% end %>
-<%= link_to "Complete Order", new_event_order_path(ticket_reservation.event_id), class: "btn btn-primary" %>
+

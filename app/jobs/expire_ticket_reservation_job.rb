@@ -1,14 +1,14 @@
 class ExpireTicketReservationJob < ApplicationJob
   queue_as :default
 
-  def perform(reservation_number)
-    reservation = TicketReservation.find_by!(reservation_number: reservation_number)
+  def perform(reference)
+    reservation = TicketReservation.find_by!(reference: reference)
 
     TicketSaleService.expire_reservation(
       event_id: reservation.event_id,
-      reservation_number: reservation.reservation_number
+      reference: reservation.reference
     )
-  rescue => e
+  rescue
     # Rails.logger.debug e.message
     # debugger
   end

@@ -3,6 +3,6 @@ FactoryBot.define do
     ticket_sale
     quantity { 1 }
     status { "enqueued" }
-    reservation_number { SecureRandom.uuid }
+    reference { SecureRandom.uuid }
   end
 end

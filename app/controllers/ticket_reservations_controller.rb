@@ -2,7 +2,7 @@ class TicketReservationsController < ApplicationController
   before_action :set_event, only: %i[new create show]
 
   def show
-    @ticket_reservation = TicketReservation.find_by!(reservation_number: params[:reservation_number])
+    @ticket_reservation = TicketReservation.find_by!(reference: params[:reservation_reference])
 
     respond_to do |format|
       format.turbo_stream do
@@ -28,15 +28,15 @@ class TicketReservationsController < ApplicationController
   end
 
   def create
-    reservation_number = SecureRandom.uuid
+    reservation_reference = SecureRandom.uuid
 
     TicketSaleService.reserve_tickets(
       event_id: params[:event_id],
       quantity: reservation_params[:quantity],
-      reservation_number: reservation_number
+      reference: reservation_reference
     )
-    @ticket_reservation = TicketReservation.find_by!(reservation_number: reservation_number)
-    add_reservation_number_to_session
+    @ticket_reservation = TicketReservation.find_by!(reference: reservation_reference)
+    add_reservation_reference_to_session
 
     respond_to do |format|
       format.turbo_stream do
@@ -46,17 +46,17 @@ class TicketReservationsController < ApplicationController
         redirect_to event_ticket_reservation_path(@event, @ticket_reservation)
       end
     end
-  rescue => e
-    raise e
-    # TODO: handle errors from ticketsaleservice, like sold out or invalid quantity
+    # rescue => e
+    #   raise e
+    #   TODO: handle errors from ticketsaleservice, like sold out or invalid quantity
   end
 
   private
 
   # TODO: implement expire reservation
-  def add_reservation_number_to_session
-    Rails.cache.write(@ticket_reservation.reservation_number, true, expires_in: 1.hour)
-    session[:reservation_number] = @ticket_reservation.reservation_number
+  def add_reservation_reference_to_session
+    Rails.cache.write(@ticket_reservation.reference, true, expires_in: 1.hour)
+    session[:reservation_reference] = @ticket_reservation.reference
   end
 
   def set_event

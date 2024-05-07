@@ -86,18 +86,21 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_05_100653) do
 
   create_table "ticket_reservations", force: :cascade do |t|
     t.bigint "ticket_sale_id", null: false
-    t.string "reservation_number"
+    t.string "reference"
     t.integer "quantity"
     t.string "status"
     t.datetime "valid_until"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["reservation_number"], name: "index_ticket_reservations_on_reservation_number", unique: true
+    t.index ["reference"], name: "index_ticket_reservations_on_reference", unique: true
     t.index ["ticket_sale_id"], name: "index_ticket_reservations_on_ticket_sale_id"
   end
 
   create_table "ticket_sales", force: :cascade do |t|
     t.bigint "event_id", null: false
+    t.integer "number_of_sold_tickets", default: 0
+    t.integer "number_of_reserved_tickets", default: 0
+    t.integer "capacity", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["event_id"], name: "index_ticket_sales_on_event_id"
