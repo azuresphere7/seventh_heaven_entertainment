@@ -67,7 +67,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_05_100653) do
 
   create_table "events", force: :cascade do |t|
     t.string "title"
-    t.decimal "price"
+    t.decimal "price", precision: 10, scale: 2
     t.datetime "starts_on"
     t.datetime "ends_on"
     t.string "location"
@@ -79,6 +79,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_05_100653) do
   create_table "orders", force: :cascade do |t|
     t.integer "quantity"
     t.bigint "event_id", null: false
+    t.decimal "ticket_price", precision: 10, scale: 2
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["event_id"], name: "index_orders_on_event_id"

@@ -4,7 +4,6 @@ class TicketReservation < ApplicationRecord
     ENQUEUED = "enqueued",
     EXPIRED = "expired",
     NO_AVAILABILITY = "no_availability",
-    CANCELLED = "cancelled", # TODO implement
     ACTIVE = "active"
   ].freeze
   belongs_to :ticket_sale
@@ -15,7 +14,7 @@ class TicketReservation < ApplicationRecord
   scope :enqueued, -> { where(status: :enqueued) }
   scope :active, -> { where(status: :active) }
 
-  delegate :event_id, :price, to: :ticket_sale
+  delegate :event_id, to: :ticket_sale
 
   def self.enqueue(quantity:, reference:)
     create!(
@@ -63,7 +62,11 @@ class TicketReservation < ApplicationRecord
     status == ENQUEUED
   end
 
+  def ticket_price
+    ticket_sale.price
+  end
+
   def total_price
-    quantity * price
+    quantity * ticket_price
   end
 end

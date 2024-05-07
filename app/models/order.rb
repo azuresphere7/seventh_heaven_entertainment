@@ -15,7 +15,7 @@ class Order < ApplicationRecord
     order.save!
   end
 
-  def total_price
-    quantity * event.price
+  def total
+    quantity * ticket_price
   end
 end
