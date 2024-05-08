@@ -5,12 +5,7 @@ class TicketReservationsController < ApplicationController
     @ticket_reservation = TicketReservation.find_by!(reference: params[:reservation_reference])
 
     respond_to do |format|
-      format.turbo_stream do
-        render turbo_stream: turbo_stream.replace("reservation_form", partial: "ticket_reservation", locals: {event: @event, ticket_reservation: @ticket_reservation})
-      end
-      format.html do
-        render :show
-      end
+      format.html { render :show }
     end
   end
 
@@ -18,9 +13,9 @@ class TicketReservationsController < ApplicationController
     @ticket_reservation = TicketReservation.new
 
     respond_to do |format|
-      format.turbo_stream do
-        render turbo_stream: turbo_stream.replace("reservation_form", partial: "form", locals: {event: @event, ticket_reservation: @ticket_reservation})
-      end
+      # format.turbo_stream do
+      #   render turbo_stream: turbo_stream.replace("reservation_form", partial: "form", locals: {event: @event, ticket_reservation: @ticket_reservation})
+      # end
       format.html do
         render :new
       end
@@ -39,12 +34,7 @@ class TicketReservationsController < ApplicationController
     add_reservation_reference_to_session
 
     respond_to do |format|
-      format.turbo_stream do
-        render turbo_stream: turbo_stream.replace("reservation_form", partial: "ticket_reservation", locals: {ticket_reservation: @ticket_reservation})
-      end
-      format.html do
-        redirect_to event_ticket_reservation_path(@event, @ticket_reservation)
-      end
+      format.html { redirect_to event_ticket_reservation_path(@event, @ticket_reservation) }
     end
     # rescue => e
     #   TODO: handle errors from ticketsaleservice, like invalid quantity

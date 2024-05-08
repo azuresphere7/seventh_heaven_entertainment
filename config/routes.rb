@@ -1,9 +1,14 @@
 Rails.application.routes.draw do
-  resources :events, except: [:destroy] do
+  resources :events, only: [:index, :show] do
     resources :ticket_reservations, param: :reservation_reference, only: [:new, :create, :show] do
       get :expire, on: :member
     end
     resources :orders, only: [:new, :create, :show]
+  end
+
+  # events are under the admin namespace
+  namespace :admin do
+    resources :events, only: [:index, :new, :create, :edit, :update, :show]
   end
 
   get "pages/about_us"

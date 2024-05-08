@@ -1,0 +1,17 @@
+<p style="color: green"><%= notice %></p>
+
+<h1>Calendar</h1>
+
+<div id="events">
+  <% @events.each do |event| %>
+    <%= render layout: "shared/event_card", locals: {event: event} do %>
+      <%= turbo_frame_tag "reservation_form" do %>
+        <%= render "ticket_reservations/form", event: event, ticket_reservation: TicketReservation.new %>
+      <% end %>
+    <% end %>
+    <p><%= link_to "Show this event", event %></p>
+  <% end %>
+</div>
+
+<%# TODO: Move to admin %>
+<%= link_to "New event", new_admin_event_path %>

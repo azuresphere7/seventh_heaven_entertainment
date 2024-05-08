@@ -1,0 +1,14 @@
+<div id="<%= dom_id event %>">
+  <div class="card" style="width: 32rem;">
+    <div class="card-body">
+      <h5 class="card-title"><%= event.title %></h5>
+      <h6 class="card-subtitle mb-2 text-body-secondary">
+        <%= "#{l(event.starts_on, format: :short)} - #{l(event.ends_on, format: :short)}" %>
+      </h6>
+      <h6 class="card-subtitle mb-2 text-body-secondary">
+        <%= event.location %>
+      </h6>
+      <p class="card-text"><%= event.description %> </p>
+    </div>
+  </div>
+</div>
