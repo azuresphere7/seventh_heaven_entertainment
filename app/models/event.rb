@@ -13,8 +13,16 @@ class Event < ApplicationRecord
   validate :starts_on_in_future
   validate :ends_on_after_starts_on
 
-  # ideally this is handled async, after which a a event is marked as 'published'
+  scope :with_open_ticket_sale, -> { where("starts_on > ?", Time.current) }
+
+  # ideally the creation of a ticket sale handled async,
+  # near realtime after creation, or by a specified moment in the future
+  # after which an event is marked as 'published'
   after_initialize { build_ticket_sale(capacity: capacity) unless ticket_sale }
+
+  def published?
+    persisted? # for now the default
+  end
 
   private
 

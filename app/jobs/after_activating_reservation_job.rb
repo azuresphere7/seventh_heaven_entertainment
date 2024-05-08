@@ -6,9 +6,6 @@ class AfterActivatingReservationJob < ApplicationJob
 
     schedule_expiring_reservation(reservation)
     broadcast_reservation_activated(reservation)
-  rescue
-    # Rails.logger.debug e.message
-    # debugger
   end
 
   private

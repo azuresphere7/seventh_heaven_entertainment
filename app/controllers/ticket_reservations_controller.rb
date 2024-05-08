@@ -47,8 +47,7 @@ class TicketReservationsController < ApplicationController
       end
     end
     # rescue => e
-    #   raise e
-    #   TODO: handle errors from ticketsaleservice, like sold out or invalid quantity
+    #   TODO: handle errors from ticketsaleservice, like invalid quantity
   end
 
   private

@@ -1,5 +1,19 @@
 require "rails_helper"
 RSpec.describe Event do
+  describe ".with_open_ticket_sale" do
+    it "returns events that have not started yet" do
+      event = create(:event, starts_on: Time.zone.tomorrow)
+      expect(described_class.with_open_ticket_sale).to include(event)
+    end
+
+    # rubocop: disable Rails/SkipsModelValidations
+    it "does not return events that have already started" do
+      event = create(:event).tap { |e| e.update_attribute(:starts_on, Time.zone.yesterday) }
+      expect(described_class.with_open_ticket_sale).not_to include(event)
+    end
+    # rubocop: enable Rails/SkipsModelValidations
+  end
+
   describe "#title" do
     it "is required" do
       event = build(:event, title: nil)

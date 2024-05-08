@@ -1,27 +1,22 @@
 class EventsController < ApplicationController
-  before_action :set_event, only: %i[show edit update destroy]
+  before_action :set_event, only: %i[show edit update]
 
-  # GET /events or /events.json
   def index
-    @events = Event.all
+    @events = Event.with_open_ticket_sale
   end
 
-  # GET /events/1 or /events/1.json
   def show
   end
 
-  # GET /events/new
   def new
     @event = Event.new
   end
 
-  # GET /events/1/edit
   def edit
   end
 
-  # POST /events or /events.json
   def create
-    @event = Event.new(event_params)
+    @event = Event.new(event_create_params)
 
     respond_to do |format|
       if @event.save
@@ -34,10 +29,9 @@ class EventsController < ApplicationController
     end
   end
 
-  # PATCH/PUT /events/1 or /events/1.json
   def update
     respond_to do |format|
-      if @event.update(event_params)
+      if @event.update(event_update_params)
         format.html { redirect_to event_url(@event), I18n.t("event.updated") }
         format.json { render :show, status: :ok, location: @event }
       else
@@ -47,25 +41,17 @@ class EventsController < ApplicationController
     end
   end
 
-  # DELETE /events/1 or /events/1.json
-  def destroy
-    @event.destroy!
-
-    respond_to do |format|
-      format.html { redirect_to events_url, notice: I18n.t("event.destroyed") }
-      format.json { head :no_content }
-    end
-  end
-
   private
 
-  # Use callbacks to share common setup or constraints between actions.
   def set_event
     @event = Event.find(params[:id])
   end
 
-  # Only allow a list of trusted parameters through.
-  def event_params
+  def event_create_params
     params.require(:event).permit(:title, :price, :starts_on, :ends_on, :location, :capacity, :description)
+  end
+
+  def event_update_params
+    params.require(:event).permit(:title, :description)
   end
 end

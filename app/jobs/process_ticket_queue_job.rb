@@ -6,7 +6,5 @@ class ProcessTicketQueueJob < ApplicationJob
     sleep 3 if Rails.env.development?
     TicketSaleService.process_ticket_queue(event_id: event_id)
   rescue
-    # Rails.logger.debug e.message
-    # debugger
   end
 end

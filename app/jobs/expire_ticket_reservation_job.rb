@@ -9,7 +9,5 @@ class ExpireTicketReservationJob < ApplicationJob
       reference: reservation.reference
     )
   rescue
-    # Rails.logger.debug e.message
-    # debugger
   end
 end
