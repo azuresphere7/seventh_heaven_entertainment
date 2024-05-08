@@ -92,6 +92,7 @@ RSpec.describe TicketSaleService do
     before do
       service.reserve_tickets(event_id: event_id, quantity: 1, reference: reference)
       service.process_ticket_queue(event_id: event_id)
+      allow(ExpireTicketReservationJob).to receive(:perform_now).and_return(nil)
     end
 
     context "when the reservation is active and valid_until is in the past" do

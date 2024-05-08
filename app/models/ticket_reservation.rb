@@ -9,7 +9,20 @@ class TicketReservation < ApplicationRecord
   belongs_to :ticket_sale
 
   validates :status, presence: true, inclusion: {in: RESERVATION_STATUSES}
-  validates :quantity, presence: true, numericality: {greater_than: 0, less_than: 7}
+  validates :quantity, numericality: {greater_than: 0, less_than: 7}
+  validates :reference, presence: true
+
+  with_options on: [:activate, :cancel_because_of_no_availability] do
+    validate :validate_was_enqueued
+  end
+
+  with_options on: :expire do
+    validate :validate_was_active
+  end
+
+  with_options on: :activate do
+    validates :valid_until, presence: true
+  end
 
   scope :enqueued, -> { where(status: :enqueued) }
   scope :active, -> { where(status: :active) }
@@ -24,30 +37,30 @@ class TicketReservation < ApplicationRecord
     )
   end
 
-  def self.head_of_the_queue
-    order(created_at: :asc).first
-  end
-
-  def to_param
-    reference
-  end
-
   def activate
-    update!(status: ACTIVE, valid_until: DURATION.from_now)
-    ExpireTicketReservationJob.set(wait_until: valid_until).perform_later(reference)
+    assign_attributes(status: ACTIVE, valid_until: DURATION.from_now)
+    save!(context: :activate)
 
-    # near realtime performance is good enough,
-    # ideally i would factor out these jobs in active record models
-    # by implementing events and handles with rails event store
+    # Ideally i would not like to have any ActiveJob calls in the models
+    # I would like to have a more event driven approach
+    # by implementing events and handle each "after action" async with rails event store
     AfterActivatingReservationJob.perform_later(reference)
   end
 
   def cancel_because_of_no_availability
-    update!(status: :no_availability)
+    assign_attributes(status: NO_AVAILABILITY)
+    save!(context: :cancel_because_of_no_availability)
   end
 
   def expire
-    update!(status: EXPIRED)
+    assign_attributes(status: EXPIRED)
+    save!(context: :expire)
+
+    AfterExpiringReservationJob.perform_later(reference)
+  end
+
+  def self.head_of_the_queue
+    enqueued.order(created_at: :asc).first
   end
 
   def can_expire?
@@ -68,5 +81,27 @@ class TicketReservation < ApplicationRecord
 
   def total_price
     quantity * ticket_price
+  end
+
+  def to_param
+    reference
+  end
+
+  private
+
+  def status_was_enqueued?
+    status_was == ENQUEUED
+  end
+
+  def status_was_active?
+    status_was == ACTIVE
+  end
+
+  def validate_was_enqueued
+    errors.add(:status, "was not enqueued, status: #{status_was}") unless status_was_enqueued?
+  end
+
+  def validate_was_active
+    errors.add(:status, "was not active, status: #{status_was}") unless status_was_active?
   end
 end

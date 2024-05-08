@@ -14,7 +14,7 @@ class TicketReservationBroadcaster
   def broadcast_expired
     ActionCable.server.broadcast(stream_name, {
       reservation_reference: reservation_reference,
-      redirect_to: event_reservation_expire_path(event_id)
+      redirect_to: expire_event_ticket_reservation_path(event_id, reservation_reference)
     })
   end
 

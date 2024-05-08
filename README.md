@@ -20,6 +20,7 @@ bundle exec rails db:setup
 Run the testsuite with documentation
 ```
 bundle exec rspec -fd
+open coverage/index.html 
 ```
 
 or start the webserver and sidekiq

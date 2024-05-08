@@ -14,8 +14,8 @@ A user who is on the page to order a ticket may only take a few minutes to compl
 
 ## Acceptance criteria
 ### Event organizer
-- A customer should be able to create an event. A title, description, start and end datetime, capacity and price are required. An event cannot be created for a past date. In order to sell tickets, an event needs to have a ticket sale.
-- Once created, a customer can only update the title or the description. Changing the times, capacity and price are out of scope of the MVP, since this would be a process instead of a simple data update. When changing these fields, we need to take into account the already ordered tickets, and the reservations that would be present during the update.
+- A customer should be able to create an event. A title, description, start and end datetime, capacity and price are required. An event cannot be created for a past date. In order to sell tickets, there needs to be a ticket sale for the event.
+- Once created, a customer can only update the title or the description. Changing the times, capacity and price are out of scope of the MVP, since this would be a process instead of a simple data update. When changing this data, we need to take into account the already ordered tickets, and the reservations that would be present during the update.
 - Creating an event should be in an admin portal behind authentication. only the customer who created the events should be able to update these events.
 - For the MVP, we just have 1 type of tickets. no seats, ranks or early-birds
 
