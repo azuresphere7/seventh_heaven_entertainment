@@ -32,7 +32,7 @@ module Admin
     def update
       respond_to do |format|
         if @event.update(event_update_params)
-          format.html { redirect_to admin_event_url(@event), I18n.t("event.updated") }
+          format.html { redirect_to admin_event_url(@event), notice: I18n.t("event.updated") }
         else
           format.html { render :edit, status: :unprocessable_entity }
         end

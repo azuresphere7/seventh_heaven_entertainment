@@ -4,14 +4,12 @@
 
 <div id="events">
   <% @events.each do |event| %>
-    <%= render layout: "shared/event_card", locals: {event: event} do %>
-      <%= turbo_frame_tag "reservation_form" do %>
-        <%= render "ticket_reservations/form", event: event, ticket_reservation: TicketReservation.new %>
+    <div class="col-md-4 mb-4">
+      <%= render layout: "shared/event_card", locals: {event: event} do %>
+        <p><%= link_to "Show this event", admin_event_path(event) %></p>
       <% end %>
-    <% end %>
-    <p><%= link_to "Show this event", event %></p>
+    </div>
   <% end %>
 </div>
 
-<%# TODO: Move to admin %>
 <%= link_to "New event", new_admin_event_path %>
