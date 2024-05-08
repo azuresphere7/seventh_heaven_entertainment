@@ -25,7 +25,8 @@ A user who is on the page to order a ticket may only take a few minutes to compl
     - If the ticket buyer does not complete the order within 8 minutes, they are redirected to the tickets overview with a message that the reservation is expired.
     - If the number of requested tickets are not directly available, because they are currently reserved by other ticket buyers, the ticket buyer stays on the waiting page, until
     - They are the first buyer in the queue and there are enough tickets available. They will be redirected to a page to add his order details
-    - They are the first buyer in the queue, but there are not enough unsold tickets. They will be redirected to the tickets overview with a message that the event is sold out
+    - They are the first buyer in the queue, but there are not enough unsold tickets. They will be redirected to the tickets overview with a message that the event is sold out.
+    - The reservation number is unique to the session of the ticket buyer. a reservation could be unique based on the session, the cookie or the user. All have their pros and cons, which should be discussed with the stakeholder.
 
 ### Other
 - It is vital that we never sell more tickets than the capacity of a given ticket sale.
