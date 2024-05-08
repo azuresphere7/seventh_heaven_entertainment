@@ -25,6 +25,13 @@ class TicketReservationBroadcaster
     })
   end
 
+  def broadcast_cancelled
+    ActionCable.server.broadcast(stream_name, {
+      reservation_reference: reservation_reference,
+      redirect_to: cancel_event_ticket_reservation_path(event_id, reservation_reference)
+    })
+  end
+
   def stream_name
     "#{CHANNEL}_#{reservation_reference}"
   end

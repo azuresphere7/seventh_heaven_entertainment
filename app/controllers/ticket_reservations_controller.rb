@@ -13,12 +13,7 @@ class TicketReservationsController < ApplicationController
     @ticket_reservation = TicketReservation.new
 
     respond_to do |format|
-      # format.turbo_stream do
-      #   render turbo_stream: turbo_stream.replace("reservation_form", partial: "form", locals: {event: @event, ticket_reservation: @ticket_reservation})
-      # end
-      format.html do
-        render :new
-      end
+      format.html { render :new }
     end
   end
 
@@ -40,12 +35,34 @@ class TicketReservationsController < ApplicationController
     #   TODO: handle errors from ticketsaleservice, like invalid quantity
   end
 
+  def expire
+    TicketReservation.find_by(reference: params[:reservation_reference])&.destroy
+    remove_reservation_reference_from_session
+
+    respond_to do |format|
+      format.html { redirect_to root_path, notice: I18n.t("reservation.expired") }
+    end
+  end
+
+  def cancel
+    TicketReservation.find_by(reference: params[:reservation_reference])&.destroy
+    remove_reservation_reference_from_session
+
+    respond_to do |format|
+      format.html { redirect_to root_path, notice: I18n.t("reservation.no_availability") }
+    end
+  end
+
   private
 
-  # TODO: implement expire reservation
   def add_reservation_reference_to_session
     Rails.cache.write(@ticket_reservation.reference, true, expires_in: 1.hour)
     session[:reservation_reference] = @ticket_reservation.reference
+  end
+
+  def remove_reservation_reference_from_session
+    Rails.cache.delete(session[:reservation_reference])
+    session.delete(:reservation_reference)
   end
 
   def set_event

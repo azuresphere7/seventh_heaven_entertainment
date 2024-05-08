@@ -40,6 +40,6 @@ Event.create!(
   starts_on: 8.days.from_now,
   ends_on: 8.days.from_now + 3.hours,
   location: "7th Heaven Outdoor Amphitheater",
-  capacity: 100,
+  capacity: 2,
   description: "Join us for a nostalgic journey through the golden age of cinema at our Movie Night Under the Stars. Sit back, relax, and enjoy timeless classics under the open sky as we pay tribute to the cinematic legends that have captured our hearts for generations."
 )

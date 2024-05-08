@@ -85,6 +85,11 @@ RSpec.describe TicketReservation do
         .to change(ticket_reservation, :status).from("enqueued").to("no_availability")
     end
 
+    it "enqueues the AfterCancellingReservationJob" do
+      expect { ticket_reservation.cancel_because_of_no_availability }
+        .to have_enqueued_job(AfterCancellingReservationJob).with(ticket_reservation.reference)
+    end
+
     context "when the reservation is not enqueued" do
       let(:ticket_reservation) { create(:ticket_reservation, status: :active) }
 

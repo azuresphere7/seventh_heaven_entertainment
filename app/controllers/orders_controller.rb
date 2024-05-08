@@ -10,42 +10,33 @@ class OrdersController < ApplicationController
   def new
     @ticket_reservation = TicketReservation.find_by!(reference: reservation_reference)
     @order = Order.new
-    # TODO: remove prefilled data
-    @order.build_customer_info(name: "test", email: "test@example", age: 18, gender: "female")
+    @order.build_customer_info
 
     respond_to do |format|
-      format.turbo_stream do
-        render turbo_stream: turbo_stream.replace("reservation_form", partial: "form", locals: {event: @event, order: @order})
-      end
       format.html do
         render :new
       end
     end
   rescue ActiveRecord::RecordNotFound, NoReservationNumberError
     flash[:error] = I18n.t("errors.reservation.expired")
-    redirect_to root_path
+    redirect_to expire_event_ticket_reservation_path(@event, reservation_reference)
   end
 
   def create
     TicketSaleService.order_tickets(
       event_id: @event.id,
       reference: reservation_reference,
-      # reference: SecureRandom.uuid,
       customer_details: order_params[:customer_info_attributes].to_h
     )
 
-    # @order = Order.find_by!(reference: reference)
-    @order = Order.first
+    @order = Order.find_by!(reference: reservation_reference)
 
     respond_to do |format|
-      format.turbo_stream do
-        render turbo_stream: turbo_stream.replace("reservation_form", partial: "order", locals: {event: @event, order: @order})
-      end
       format.html do
         redirect_to event_order_path(@event, @order)
       end
     end
-  rescue
+    # rescue
     # handle errors like invalid order, and reservation expired
   end
 
@@ -60,8 +51,10 @@ class OrdersController < ApplicationController
   end
 
   def reservation_reference
-    reservation_reference = session[:reservation_reference]
-    return reservation_reference unless reservation_reference && Rails.cache.exist?(reservation_reference)
-    raise NoReservationNumberError unless reservation_reference
+    @reservation_reference ||= begin
+      reservation_reference = session[:reservation_reference]
+      return reservation_reference unless reservation_reference && Rails.cache.exist?(reservation_reference)
+      raise NoReservationNumberError unless reservation_reference
+    end
   end
 end

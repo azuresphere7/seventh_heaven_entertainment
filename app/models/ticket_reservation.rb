@@ -1,5 +1,6 @@
 class TicketReservation < ApplicationRecord
   DURATION = 8.minutes
+  # DURATION = 30.seconds
   RESERVATION_STATUSES = [
     ENQUEUED = "enqueued",
     EXPIRED = "expired",
@@ -50,6 +51,8 @@ class TicketReservation < ApplicationRecord
   def cancel_because_of_no_availability
     assign_attributes(status: NO_AVAILABILITY)
     save!(context: :cancel_because_of_no_availability)
+
+    AfterCancellingReservationJob.perform_later(reference)
   end
 
   def expire

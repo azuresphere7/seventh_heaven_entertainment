@@ -1,6 +1,8 @@
 class AfterActivatingReservationJob < ApplicationJob
   queue_as :default
 
+  # I'm aware these 2 actions are highly coupled.
+  # ideally, we would have 2 event listeners for this
   def perform(reservation_reference)
     reservation = TicketReservation.find_by!(reference: reservation_reference)
 

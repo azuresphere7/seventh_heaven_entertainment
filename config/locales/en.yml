@@ -34,3 +34,4 @@ en:
     deleted: "Event was successfully deleted."
   reservation:
     expired: "Reservation has expired."
+    no_availability: "Event is sold out"
