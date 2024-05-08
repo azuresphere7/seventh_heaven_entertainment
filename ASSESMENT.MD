@@ -1,6 +1,6 @@
-# Assignement
+# Assesment
 
-## Use case
+## Given Use case
 A customer has an entertainment company and wants to organise a concert and wants a page where people can reserve a ticket. A ticket has a price. Only a few tickets are available per concert.
 
 If it is not busy, a user can go directly to the page where the user can buy the ticket. However, if it is busy then the user must be queued to reduce the load on the system. The user is then directed to a 'wait’ page and should automatically go from the queue to the page where the ticket can be bought if there is space.
@@ -8,22 +8,22 @@ If it is not busy, a user can go directly to the page where the user can buy the
 A user who is on the page to order a ticket may only take a few minutes to complete an order. When this time is up, the user may no longer order a ticket. The user then has to make room for the next customer.
 
 ## Solution
-- The first solution I would ask the customer to consider, is to go for an integration with Eventix. Eventix offers a reliable and scalable solution, and will probably save you time and costs when compared to a custom build solution.
-- If a custom build ticket service is required, it is important to handle a high load on the server. There are multiple plugins available, for example [from queue-it](https://queue-it.com/virtual-waiting-room/) 
-- For this assignment, we assume the webserver can handle the expected traffic. Therefore, I've opted letting the queue be handled by Ruby on Rails. This repository is a rough implementation of how such a solution would look like (not production ready)
+- The first solution I would ask the customer to consider, is to go for an integration with for example Eventix. Eventix offers a reliable and scalable solution, and will probably save you time and costs compared to a custom build solution.
+- If a custom build ticket service is required, it is important to handle a high load on the server. There are multiple third party solutions available, for example [from queue-it](https://queue-it.com/virtual-waiting-room/) 
+- For this assesment, we assume the webserver can handle the expected traffic. Therefore, I've opted letting the queue be handled by Ruby on Rails. This repository is a rough implementation of how such a solution would look like (not production ready)
 
 ## Acceptance criteria
 ### Event organizer
 - A customer should be able to create an event. A title, description, start and end datetime, capacity and price are required. An event cannot be created for a past date. In order to sell tickets, an event needs to have a ticket sale.
-- Once created, a customer can only update the title or the description. Changing the times, capacity and price are out of scope of the MVP, since this would be a more complex process than a simple data update. When changing these fields, we need to take into account the already ordered tickets, and the reservations that would be present during the update
+- Once created, a customer can only update the title or the description. Changing the times, capacity and price are out of scope of the MVP, since this would be a process instead of a simple data update. When changing these fields, we need to take into account the already ordered tickets, and the reservations that would be present during the update.
 - Creating an event should be in an admin portal behind authentication. only the customer who created the events should be able to update these events.
 - For the MVP, we just have 1 type of tickets. no seats, ranks or early-birds
 
 ### Ticket buyer
 - A ticket buyer should see a list of upcoming events. For each event, they can order max of 6 tickets.
-- If the number of requested tickets is available, the ticket buyer is redirected to a form where they can fill in their name, email, age and gender (the last 2 are for event sale analysis). all these fields are required
-    - If the ticket buyer does not complete the order within 8 minutes, he is redirected to the tickets overview with a message that the reservation is expired.
-- If the number of requested tickets are not directly available, because they are currently reserved by other users, the ticket buyer stays on the waiting page, until
+- If the number of requested tickets is available, the ticket buyer is redirected to a form where they can fill in their name, email, age and gender (the last 2 are for event sale analysis). All these fields are required
+    - If the ticket buyer does not complete the order within 8 minutes, they are redirected to the tickets overview with a message that the reservation is expired.
+    - If the number of requested tickets are not directly available, because they are currently reserved by other ticket buyers, the ticket buyer stays on the waiting page, until
     - They are the first buyer in the queue and there are enough tickets available. They will be redirected to a page to add his order details
     - They are the first buyer in the queue, but there are not enough unsold tickets. They will be redirected to the tickets overview with a message that the event is sold out
 
@@ -52,6 +52,10 @@ We solve this by locking the ticket sale when we process an order or a reservati
 - Ticket sale queues are processed async with ActiveJob (using sidekiq). This is easy to scale by adding extra workers
 - If the locking of the ticket sale becomes the bottle neck, one could create multiple ticket sales and randomly assign a reservation to the queue
 - Updates about the reservation status are broadcasted back to the ticket buyer using Actioncable. ActionCable might become a bottle neck. [Any cable](https://nebulab.com/blog/actioncable-vs-anycable-fight) can be good be a alternative.
+
+## Security
+- We don't expose reservation ids because they are incremental and can be guessed. The only thing we expose is the reservation code
+- The quantity of an order can not be tinkered with, since we read it from the reservation upon submitting an order.
 
 ### Event organizer portal
 - Authenticated with devise (not implemented)
