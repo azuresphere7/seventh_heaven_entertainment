@@ -5,20 +5,29 @@ application up and running.
 
 Things you may want to cover:
 
-* Ruby version
+## Dependencies
+- ruby 3.2.1
+- rails 7.1.3
+- redis
+- postgres
 
-* System dependencies
+## Setup
+```
+bundle install
+```
 
-* Configuration
+setup the db and load the seeds
 
-* Database creation
+```
+bundle exec rails db:setup
+```
 
-* Database initialization
+Run the testsuite with documentation
+```
+bundle exec rspec -fd
+```
 
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+or start the webserver and sidekiq
+```
+foreman start
+```

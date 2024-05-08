@@ -65,7 +65,7 @@ group :development do
   gem "guard"
   gem "guard-rspec", require: false
   gem "erb_lint", require: false
-
+  gem "foreman"
   # Add speed badges [https://github.com/MiniProfiler/rack-mini-profiler]
   # gem "rack-mini-profiler"
 
