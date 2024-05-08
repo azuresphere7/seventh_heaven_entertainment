@@ -19,4 +19,24 @@ RSpec.describe Order do
       expect(order.total.to_s).to eql("84.0")
     end
   end
+
+  describe "#quantity" do
+    let(:order) { create(:order, quantity: 4) }
+
+    it "is required" do
+      order.quantity = nil
+      expect(order).not_to be_valid
+      expect(order.errors[:quantity]).to include("is not a number")
+    end
+  end
+
+  describe "#ticket_price" do
+    let(:order) { create(:order, ticket_price: "21.00") }
+
+    it "is required" do
+      order.ticket_price = nil
+      expect(order).not_to be_valid
+      expect(order.errors[:ticket_price]).to include("can't be blank")
+    end
+  end
 end

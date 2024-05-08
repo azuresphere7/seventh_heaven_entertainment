@@ -71,11 +71,13 @@ class TicketSale < ApplicationRecord
         Order.submit(
           event_id: event.id,
           quantity: reservation.quantity,
+          ticket_price: price,
           customer_details: customer_details
         )
         reservation.destroy!
         add_to_sold_and_removed_from_reserved_tickets(reservation.quantity)
       else
+
         raise InvalidReservation
       end
     end

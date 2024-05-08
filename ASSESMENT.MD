@@ -62,6 +62,5 @@ We solve this by locking the ticket sale when we process an order or a reservati
 - Authenticated with devise (not implemented)
 
 ## Backlog
-- Complete the flows for expiration and sold out in the frontend, removing the reservation number from the session
 - Add devise for event organizer portal, and extract the creation of events to the event organizer portal
-- Add system specs and implementation for non happy flows (the frontend is quite buggy at the moment)
+- Add system specs and implementation for non happy flows (couple of edge cases are not handled)
