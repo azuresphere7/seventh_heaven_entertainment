@@ -72,6 +72,7 @@ class TicketSale < ApplicationRecord
           event_id: event.id,
           quantity: reservation.quantity,
           ticket_price: price,
+          reference: reference,
           customer_details: customer_details
         )
         reservation.destroy!

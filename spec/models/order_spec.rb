@@ -39,4 +39,14 @@ RSpec.describe Order do
       expect(order.errors[:ticket_price]).to include("can't be blank")
     end
   end
+
+  describe "#reference" do
+    let(:order) { create(:order, reference: "123") }
+
+    it "is required" do
+      order.reference = nil
+      expect(order).not_to be_valid
+      expect(order.errors[:reference]).to include("can't be blank")
+    end
+  end
 end

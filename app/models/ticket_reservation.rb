@@ -1,6 +1,5 @@
 class TicketReservation < ApplicationRecord
   DURATION = 8.minutes
-  # DURATION = 30.seconds
   RESERVATION_STATUSES = [
     ENQUEUED = "enqueued",
     EXPIRED = "expired",

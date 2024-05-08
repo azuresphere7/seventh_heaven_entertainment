@@ -61,6 +61,7 @@ class TicketReservationsController < ApplicationController
   end
 
   def remove_reservation_reference_from_session
+    return unless session[:reservation_reference]
     Rails.cache.delete(session[:reservation_reference])
     session.delete(:reservation_reference)
   end
