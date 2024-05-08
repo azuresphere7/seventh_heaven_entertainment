@@ -24,7 +24,7 @@ class TicketReservation < ApplicationRecord
     validates :valid_until, presence: true
   end
 
-  scope :enqueued, -> { where(status: :enqueued) }
+  scope :enqueued, -> { where(status: :enqueued).order(created_at: :asc) }
   scope :active, -> { where(status: :active) }
 
   delegate :event_id, to: :ticket_sale

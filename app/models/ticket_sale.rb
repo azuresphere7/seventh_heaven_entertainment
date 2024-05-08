@@ -14,7 +14,7 @@ class TicketSale < ApplicationRecord
   end
 
   def process_queue
-    enqueued_reservations.find_each do |reservation|
+    ticket_reservations.enqueued.find_each do |reservation|
       break if awaiting_active_reservations?(reservation)
 
       process_enqueued_reservation(reservation)
@@ -63,7 +63,6 @@ class TicketSale < ApplicationRecord
     reservation.quantity > number_of_unsold_tickets
   end
 
-  # TODO: add default payment status
   def submit_order(reference:, customer_details:)
     with_lock do
       reservation = find_reservation(reference)
@@ -83,7 +82,7 @@ class TicketSale < ApplicationRecord
   end
 
   def reservation_at_head_of_the_queue?(reference:)
-    enqueued_reservations.head_of_the_queue.reference == reference
+    ticket_reservations.head_of_the_queue.reference == reference
   end
 
   private
@@ -109,10 +108,6 @@ class TicketSale < ApplicationRecord
       number_of_sold_tickets: number_of_sold_tickets + quantity,
       number_of_reserved_tickets: number_of_reserved_tickets - quantity
     )
-  end
-
-  def enqueued_reservations
-    ticket_reservations.enqueued.order(created_at: :asc)
   end
 
   # :reek:UtilityFunction
